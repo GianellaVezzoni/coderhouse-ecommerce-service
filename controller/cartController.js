@@ -2,16 +2,17 @@ import Cart from '../models/Cart.js';
 
 export const createCart = async (req, res) => {
   try {
-      const { products, userId } = req.body
+      const { products, userId } = req.body;
       const newCart = new Cart({
-          products,
-          userId,
-      })
+        products,
+        userId
+      });
+
       const cart = await newCart.save();
       res.status(201).json({
         msg: 'Carrito creado',
         data: cart
-      })
+      });
   } catch (err) {
       res.status(400).json({
         msg: 'Error al crear el carrito',
@@ -23,10 +24,15 @@ export const createCart = async (req, res) => {
 export const getCartById = async (req, res) => {
   try {
       const cartFounded = await Cart.findById(req.params.cartId);
+      if(!cartFounded){
+        return  res.status(404).json({
+          msg: 'Carrito no encontrado'
+        });
+      }
       res.status(200).json({
         msg: 'Carrito encontrado',
         data: cartFounded
-      })
+      });
   } catch (err) {
       res.status(400).json({
         msg: 'Error al obtener el carrito',
@@ -37,8 +43,9 @@ export const getCartById = async (req, res) => {
 
 export const updateCart = async (req, res) => {
   try {
-    const { products } = req.body
-    const cartUpdated = await Cart.findByIdAndUpdate(req.params.cartId, { products }, { new: true });
+    const {cartId} = req.params;
+    const { products } = req.body;
+    const cartUpdated = await Cart.findByIdAndUpdate(cartId, { products }, { new: true });
     res.status(200).json({
       msg: 'Carrito actualizado',
       data: cartUpdated
@@ -53,7 +60,12 @@ export const updateCart = async (req, res) => {
 
 export const deleteCart = async (req, res) => {
   try {
-    const cartDeleted = await Cart.deleteOne(req.params.cartId);
+    const cartDeleted = await Cart.findByIdAndDelete(req.params.cartId);
+    if(!cartDeleted){
+      return res.status(404).json({
+        msg: 'Id de carrito incorrecto',
+      });
+    }
     res.status(200).json({
       msg: 'Carrito eliminado',
       data: cartDeleted

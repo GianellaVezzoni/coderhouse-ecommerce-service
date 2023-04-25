@@ -1,10 +1,9 @@
 import mongoose from 'mongoose';
 const {Schema, model} = mongoose;
 
-const CartSchema = new Schema({
-  userId: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
+const OrderSchema = new Schema({
+  orderNumber: {
+    type: Schema.Types.Number,
     required: true,
   },
   products: [
@@ -24,6 +23,19 @@ const CartSchema = new Schema({
   createdAt: {
     type: Date,
   },
+  status: {
+    type: String,
+    required: true
+  },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true
+  }
 });
 
-export default model('Cart', CartSchema)
+export default model('Order', OrderSchema)

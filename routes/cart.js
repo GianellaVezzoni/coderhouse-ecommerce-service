@@ -3,9 +3,9 @@ import {getCartById, updateCart, deleteCart, createCart} from '../controller/car
 import {verifyToken} from '../middleware/authJwt.js';
 const router = express.Router();
 
-router.route('/users/:userId').get(verifyToken, getCartById);
-router.route('/users').post(verifyToken, createCart);
-router.route('/users/:userId').put(verifyToken, updateCart);
-router.route('/user/:userId').delete(verifyToken, deleteCart);
+router.route('/cart/:cartId').get(verifyToken, getCartById);
+router.route('/cart').post(verifyToken, createCart);
+router.route('/cart/:cartId').put(verifyToken, updateCart);
+router.route('/cart/:cartId').delete(verifyToken, deleteCart);
 
 export default router;

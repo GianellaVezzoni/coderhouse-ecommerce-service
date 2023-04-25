@@ -1,21 +1,37 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import { sendEmails } from '../utils/sendEmails.js';
 
 const EXPIRATION_TIME = 28800
 
 export const signup = async (req, res) => {
   try {
-      const { username, password } = req.body
+      const { username, password, name, phone } = req.body;
+      const userFounded = await User.findOne({username: username});
+      if(userFounded){
+        return res.status(400).json({
+          msg: 'Email ya registrado'
+        });
+      }
       const newUser = new User({
           username,
+          name: name,
+          phone: phone,
           password: await User.encryptPassword(password),
       })
-      const registeredUser = await newUser.save()
-      const token = jwt.sign({ id: registeredUser._id }, process.env.SECRET, {
-          expiresIn: EXPIRATION_TIME, // 8 horas
-      });
-      return res.status(200).json({ token })
+      const registeredUser = await newUser.save();
+      await sendEmails(username, 'Usuario registrado en Rappi shop', `
+      <p>Bienvenido usuario ${name}: <br/>
+        Estamos muy ansiosos que te hayas registrado en nuestra plataforma.
+        Esperamos que disfrutes comprar en nuestra plataforma. <br /> <br/>
+        Atte. Rappi shop
+      </p>`);
+      return res.status(200).json({ 
+        msg: 'Usuario registrado',
+        data: registeredUser
+       })
   } catch (error) {     
+      console.log(error);
       return res.status(500).json(error)
   }
 }
@@ -34,10 +50,10 @@ export const signin = async (req, res) => {
       const token = jwt.sign({ id: userFound._id }, process.env.SECRETPRIVATEKEY, { expiresIn: EXPIRATION_TIME, })
       res.json({
         msg: 'Inicio de sesion correcto',
+        email: userFound.username,
         token
-    })
+      });
   } catch (error) {
-    console.log('el error ', error)
-      res.status(400).json({error, message: '?'})
+      res.status(400).json({error, message: 'Error al iniciar sesion'})
   }
 }
