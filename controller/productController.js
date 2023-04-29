@@ -17,12 +17,12 @@ export const getAllProducts = async (_, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-      const { name, description, price, image, stock, categories } = req.body;
+      const { name, description, price, productFile, stock, categories } = req.body;
       const newProduct = new Product({
           name,
           description,
           price,
-          image,
+          productFile,
           stock,
           categories
       });

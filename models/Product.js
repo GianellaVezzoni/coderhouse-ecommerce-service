@@ -13,8 +13,10 @@ const ProductSchema = new Schema({
     type: Number,
     required: true,
   },
-  image: {
-    type: String,
+  productFile: {
+    type: String, 
+    require: true, 
+    max: 200
   },
   stock: {
     type: Number
