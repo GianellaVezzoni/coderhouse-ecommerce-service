@@ -1,8 +1,9 @@
-import Product from "../models/Product.js";
+import ProductService from '../services/Product.js';
+const productInstance = new ProductService();
 
 export const getAllProducts = async (_, res) => {
   try {
-    const products = await Product.find({});
+    const products = await productInstance.getAll();
     res.status(200).json({
       msg: 'Productos encontrados',
       data: products
@@ -18,15 +19,15 @@ export const getAllProducts = async (_, res) => {
 export const createProduct = async (req, res) => {
   try {
       const { name, description, price, productFile, stock, categories } = req.body;
-      const newProduct = new Product({
-          name,
-          description,
-          price,
-          productFile,
-          stock,
-          categories
-      });
-      const product = await newProduct.save();
+      const newProduct = {
+        name,
+        description,
+        price,
+        productFile,
+        stock,
+        categories
+    }
+      const product = await productInstance.createOne(newProduct);
       res.status(201).json({
         msg: 'Producto creado',
         data: product
@@ -42,13 +43,13 @@ export const createProduct = async (req, res) => {
 export const getProductById = async (req, res) => {
   try {
     const {productId} = req.params;
-    if(!productId){
+    const productFounded = await productInstance.getOne(productId);
+    if(!productFounded){
       return res.status(404).json({
         msg: 'Producto no encontrado',
       });
     }
-    const productFounded = await Product.findById(req.params.productId);
-    res.status(200).json({
+    return res.status(200).json({
       msg: 'Producto encontrado',
       data: productFounded
     });
@@ -68,9 +69,9 @@ export const updateProduct = async (req, res) => {
           msg: 'Producto no encontrado',
         });
       }
-    const { name, description, price, image, stock } = req.body
-    const productUpdated = await Product.findByIdAndUpdate(req.params.productId, { name, description, price, image, stock }, { new: true });
-    res.status(200).json({
+    const { name, description, productFile, price, stock } = req.body
+    const productUpdated = await productInstance.updateProduct(productId, { name, description, price, productFile, stock });
+    return res.status(200).json({
       msg: 'Producto actualizado',
       data: productUpdated
     });
@@ -84,19 +85,13 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   try {
-    const {file} = req;
-    if(!file.length){
-      return res.status(400).json({
-        msg: 'Debes ingresar una imagen',
-      });
-    }
     const {productId} = req.params;
       if(!productId){
         return res.status(404).json({
           msg: 'Producto no encontrado',
         });
       }
-    const productDeleted = await Product.deleteOne(req.params.productId);
+    const productDeleted = await productInstance.deleteOne(productId);
     res.status(200).json({
       msg: 'Producto eliminado',
       data: productDeleted

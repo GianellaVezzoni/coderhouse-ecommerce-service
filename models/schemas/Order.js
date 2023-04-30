@@ -1,7 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 const {Schema, model} = mongoose;
 
 const OrderSchema = new Schema({
+  id: {
+    type: Types.ObjectId,
+  },
   orderNumber: {
     type: Schema.Types.Number,
     required: true,

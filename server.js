@@ -31,6 +31,11 @@ server.use('/api/v1/', categoriesRoutes);
 server.use('/api/test/', testConnection);
 server.use('/api/v1/', ordersRoutes);
 
+// Endpoint para testear el funcionamiento del back
+server.get('/ping', (_, res) => {
+  res.json('pong');
+});
+
 server.get('/', (_, res) => {
   res.redirect('/api/v1/products');
 });
