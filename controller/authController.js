@@ -49,6 +49,7 @@ export const signin = async (req, res) => {
     return res.json({
       msg: 'Inicio de sesion correcto',
       email: userLogged.username,
+      id: userLogged.id,
       token
     });
   } catch (error) {
